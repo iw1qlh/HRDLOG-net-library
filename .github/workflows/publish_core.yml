@@ -33,6 +33,9 @@ jobs:
       with:        
         path: ${{ env.PROJECT_NAME }}
         
+    - name: Test
+      run: dotnet test --verbosity normal
+      
     - name: Publish on NuGet        
       uses: rohith/publish-nuget@v2
       with:          
