@@ -2,7 +2,7 @@ name: Publish HRDLOG-net-library on NuGet
  
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths: [ 'src/HRDlibrary/**' ]
   workflow_dispatch:
 
@@ -10,6 +10,7 @@ env:
   NET_VERSION: '6.x'
   PROJECT_NAME: src/HRDlibrary 
   PROJECT_FILE: HRDlibrary.csproj  
+  SOLUTION_FILE: HRDlibrary.sln
   
 jobs:
   build:
@@ -34,7 +35,7 @@ jobs:
         path: ${{ env.PROJECT_NAME }}
         
     - name: Test
-      run: dotnet test --verbosity normal
+      run: dotnet test ${{ env.SOLUTION_FILE }} --verbosity normal
       
     - name: Publish on NuGet        
       uses: rohith/publish-nuget@v2
