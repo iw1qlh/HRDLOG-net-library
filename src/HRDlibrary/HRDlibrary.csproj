@@ -2,6 +2,11 @@
 
   <PropertyGroup>
 	  <TargetFrameworks>net461;net6.0</TargetFrameworks>
+	  <Authors>IW1QLH</Authors>
+	  <Company>IW1QLH</Company>
+	  <Product>HRDLOG.net library</Product>
+	  <Title>HRDLOG.net library for .NET </Title>
+	  <Description>This library contains a collection of methods to send data to HRDLOG.net / Ham365</Description>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,6 +15,21 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

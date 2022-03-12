@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
-namespace HRDlibrary
+namespace HRDLibrary
 {
     public class HrdProtocol
     {
@@ -23,7 +23,7 @@ namespace HRDlibrary
             uploadCode = UploadCode;
         }
 
-        public async Task<Response> SendQsoAsync(Cmd Command, string Adif, string QsoKey)
+        public async Task<Response> SendQsoAsync(Cmd Command, string Adif, string QsoKey = null)
         {
             Response result = Response.Error;
 
@@ -107,7 +107,7 @@ namespace HRDlibrary
 
         }
 
-        public async Task<bool> SendonAirAsync(long Frequency, string Mode, string Rig)
+        public async Task<bool> SendOnAirAsync(long Frequency, string Mode, string Rig)
         // Azimuth (optional)
         // Lat (optional): Latitude
         // Long (optional): Longitude
@@ -123,7 +123,7 @@ namespace HRDlibrary
                 List<KeyValuePair<string, string>> data = new List<KeyValuePair<string, string>>();
                 data.Add(new KeyValuePair<string, string>("Frequency", Frequency.ToString()));
                 data.Add(new KeyValuePair<string, string>("Mode", Mode));
-                data.Add(new KeyValuePair<string, string>("Rig", Rig));
+                data.Add(new KeyValuePair<string, string>("Radio", Rig));
                 data.Add(new KeyValuePair<string, string>("Callsign", callsign));
                 data.Add(new KeyValuePair<string, string>("Code", uploadCode));
                 data.Add(new KeyValuePair<string, string>("App", "WinLog365"));
