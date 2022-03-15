@@ -16,14 +16,29 @@ The library is available on [NuGet](https://www.nuget.org/packages/HRDlibrary). 
 ```C#
 var protocol = new HrdProtocol("TEST", "0000000000");
 
-// Send QSO to HRDLOG.net
-string adif = "<call:4>TEST <qso_date:8:d>20090113 <time_on:6>210237 <band:3>20m <mode:2>CW <rst_sent:3>599 <rst_rcvd:3>599 <station_callsign:11>IW1QLH/TEST <EOR>";
-var response1 = await protocol.SendQsoAsync(HrdProtocol.Cmd.Insert, adif);
-Console.WriteLine($"SendQso: {response1}");
+// Check is HRDLOG.net is reachable
+var isReachable = await protocol.IsHostReachableAsync();
+Console.WriteLine($"IsHostReachable: {isReachable}");
 
-// Send ON-AIR status to HRDLOG.net
-var response2 = await protocol.SendOnAirAsync(7100000, "USB", "TESTING");
-Console.WriteLine($"OnAir: {response2}");
+if (isReachable)
+{
+    try
+    {
+        // Send QSO to HRDLOG.net
+        string adif = "<call:4>TEST <qso_date:8:d>20090113 <time_on:6>210237 <band:3>20m <mode:2>CW <rst_sent:3>599 <rst_rcvd:3>599 <station_callsign:11>IW1QLH/TEST <EOR>";
+        var response1 = await protocol.SendQsoAsync(HrdProtocol.Cmd.Insert, adif);
+        Console.WriteLine($"SendQso: {response1.Status}");
+
+        // Send ON-AIR status to HRDLOG.net
+        var response2 = await protocol.SendOnAirAsync(7100000, "USB", "TESTING");
+        Console.WriteLine($"OnAir: {response2}");
+    }
+    catch
+    {
+        throw;
+    }
+}
+
 
 ```
 

@@ -7,6 +7,8 @@
 	  <Product>HRDLOG.net library</Product>
 	  <Title>HRDLOG.net library for .NET </Title>
 	  <Description>This library contains a collection of methods to send data to HRDLOG.net / Ham365</Description>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+	  <PackageIcon>HRDL_icon_256.jpg</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
