@@ -6,46 +6,88 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 
+// todo: per evitare perdite di invii test e trasmissione su entrambi gli host
+
 namespace HRDLibrary
 {
     public class HrdProtocol
     {
         public enum Cmd { Insert, Delete, Update };
-        public enum Status { Ok, Dupe, Error, UnknownUser };       
+        public enum Status { Ok, Dupe, Error, UnknownUser };
+
+        [Flags]
+        public enum Hosts { Primary = 1, Secondary = 2};
 
         private readonly string callsign;
         private readonly string uploadCode;
         private readonly string appName;
-        private readonly string host;
+        private readonly Hosts hosts;
 
         /// <summary>Inizializes a new instance of the HrdProtocol class</summary>
         /// <param name="Callsign">The user callsign</param>
         /// <param name="UploadCode">The upload code received via email after the registration</param>
         /// <param name="AppName">The application name</param>
-        public HrdProtocol(string Callsign, string UploadCode, string AppName, string Host = "robot.hrdlog.net")
+        public HrdProtocol(string Callsign, string UploadCode, string AppName, Hosts hosts = Hosts.Primary | Hosts.Secondary)
         {
             callsign = Callsign;
             uploadCode = UploadCode;
             appName = AppName;
-            host = Host;
+            this.hosts = hosts;
+        }
+
+        private string GetHostAddress(Hosts host)
+        {
+            string result = null;
+
+            switch (host)
+            {
+                case Hosts.Primary:
+                    result = "robot.hrdlog.net";
+                    break;
+                case Hosts.Secondary:
+                    result = "www.hrdlog.net";
+                    break;
+            }
+
+            return result;
+
         }
 
         /// <summary>Check if HRDLOG.net is reachable</summary>
         /// <returns>True when the host is reachable</returns>
         public async Task<bool> IsHostReachableAsync()
         {
+            return await WhichHostIsReachableAsync() != null;
+        }
 
-            // PING SERVER
-            IPStatus status = IPStatus.Unknown;
-            try
+        /// <summary>Check which HRDLOG.net server is reachable</summary>
+        /// <returns>Return the address of the reachable server</returns>
+        public async Task<string> WhichHostIsReachableAsync()
+        {
+
+            foreach (Hosts host in (Hosts[])Enum.GetValues(typeof(Hosts)))
             {
-                Ping ping = new Ping();                
-                PingReply pr = await ping.SendPingAsync(host, 5000);
-                status = pr.Status;
-            }
-            catch { }
+                if ((hosts & host) != 0)
+                {
+                    string addr = GetHostAddress(host);
 
-            return (status == IPStatus.Success);
+                    // PING SERVER
+                    IPStatus status = IPStatus.Unknown;
+                    try
+                    {
+                        Ping ping = new Ping();
+                        PingReply pr = await ping.SendPingAsync(addr, 5000);
+                        status = pr.Status;
+                    }
+                    catch { }
+
+                    if (status == IPStatus.Success)
+                        return addr;
+
+                }
+            }
+
+            return null;
 
         }
 
@@ -60,6 +102,10 @@ namespace HRDLibrary
             {
                 Status = Status.Error
             };
+
+            string addr = await WhichHostIsReachableAsync();
+            if (addr == null)
+                throw new Exception("Servers not available");
 
             string reply = "insert";
 
@@ -100,7 +146,7 @@ namespace HRDLibrary
                 }
 
                 FormUrlEncodedContent content = new FormUrlEncodedContent(data);
-                HttpResponseMessage response = await wc.PostAsync(new Uri($"http://{host}/NewEntry.aspx"), content);
+                HttpResponseMessage response = await wc.PostAsync(new Uri($"http://{addr}/NewEntry.aspx"), content);
                 if (!response.IsSuccessStatusCode)
                     throw new Exception("Server error");
                 using (XmlReader reader = XmlReader.Create(await response.Content.ReadAsStreamAsync()))
@@ -157,6 +203,11 @@ namespace HRDLibrary
         {
             bool result = false;
 
+            string addr = await WhichHostIsReachableAsync();
+            if (addr == null)
+                throw new Exception("Servers not available");
+
+
             using (HttpClient wc = new HttpClient())
             {
                 wc.Timeout = new TimeSpan(0, 0, 5);
@@ -170,7 +221,7 @@ namespace HRDLibrary
                 data.Add(new KeyValuePair<string, string>("App", appName));
 
                 FormUrlEncodedContent content = new FormUrlEncodedContent(data);
-                HttpResponseMessage response = await wc.PostAsync(new Uri($"http://{host}/OnAir.aspx"), content);
+                HttpResponseMessage response = await wc.PostAsync(new Uri($"http://{addr}/OnAir.aspx"), content);
                 if (!response.IsSuccessStatusCode)
                     throw new Exception("Server error");
                 using (XmlReader reader = XmlReader.Create(await response.Content.ReadAsStreamAsync()))

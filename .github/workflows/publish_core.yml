@@ -38,7 +38,7 @@ jobs:
 #      run: dotnet test ${{ env.SOLUTION_FILE }} --verbosity normal
       
     - name: Publish on NuGet        
-      uses: rohith/publish-nuget@v2
+      uses: vicosanz/publish-nuget@v2.5.6
       with:          
         PROJECT_FILE_PATH: '${{ env.PROJECT_NAME }}/${{ env.PROJECT_FILE }}'
         VERSION_STATIC: ${{ steps.nbgv.outputs.NuGetPackageVersion }}
