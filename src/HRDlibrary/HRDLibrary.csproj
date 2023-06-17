@@ -4,6 +4,7 @@
 	  <TargetFrameworks>net461;netstandard2.0;net6.0</TargetFrameworks>
 	  <Authors>IW1QLH</Authors>
 	  <Company>IW1QLH</Company>
+	  <Copyright>IW1QLH</Copyright>
 	  <Product>HRDLOG.net library</Product>
 	  <Title>HRDLOG.net library for .NET </Title>
 	  <Description>This library contains a collection of methods to send data to HRDLOG.net / Ham365</Description>
@@ -12,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Nerdbank.GitVersioning" Version="3.4.255">
+    <PackageReference Include="Nerdbank.GitVersioning" Version="3.6.133">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>

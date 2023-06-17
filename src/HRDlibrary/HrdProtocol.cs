@@ -22,17 +22,19 @@ namespace HRDLibrary
         private readonly string uploadCode;
         private readonly string appName;
         private readonly Hosts hosts;
+        private readonly bool secure;
 
         /// <summary>Inizializes a new instance of the HrdProtocol class</summary>
         /// <param name="Callsign">The user callsign</param>
         /// <param name="UploadCode">The upload code received via email after the registration</param>
         /// <param name="AppName">The application name</param>
-        public HrdProtocol(string Callsign, string UploadCode, string AppName, Hosts hosts = Hosts.Primary | Hosts.Secondary)
+        public HrdProtocol(string Callsign, string UploadCode, string AppName, Hosts hosts = Hosts.Primary | Hosts.Secondary, bool Secure = true)
         {
             callsign = Callsign;
             uploadCode = UploadCode;
             appName = AppName;
             this.hosts = hosts;
+            secure = Secure;
         }
 
         private string GetHostAddress(Hosts host)
@@ -146,7 +148,8 @@ namespace HRDLibrary
                 }
 
                 FormUrlEncodedContent content = new FormUrlEncodedContent(data);
-                HttpResponseMessage response = await wc.PostAsync(new Uri($"http://{addr}/NewEntry.aspx"), content);
+                Uri uri = new Uri($"http{(secure ? "s" : "")}://{addr}/NewEntry.aspx");
+                HttpResponseMessage response = await wc.PostAsync(uri, content);
                 if (!response.IsSuccessStatusCode)
                     throw new Exception("Server error");
                 using (XmlReader reader = XmlReader.Create(await response.Content.ReadAsStreamAsync()))
